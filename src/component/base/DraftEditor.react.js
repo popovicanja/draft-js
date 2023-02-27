@@ -42,6 +42,7 @@ const isHTMLElement = require('isHTMLElement');
 const nullthrows = require('nullthrows');
 
 const isIE = UserAgent.isBrowser('IE');
+const hasBeforeInputSupport = require('hasBeforeInputSupport');
 
 // IE does not support the `input` event on contentEditable, so we can't
 // observe spellcheck behavior.
@@ -417,7 +418,9 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
             })}
             contentEditable={!readOnly}
             data-testid={this.props.webDriverTestID}
-            onBeforeInput={this._onBeforeInput}
+            onBeforeInput={
+              !hasBeforeInputSupport ? this._onBeforeInput : () => {}
+            }
             onBlur={this._onBlur}
             onCompositionEnd={this._onCompositionEnd}
             onCompositionStart={this._onCompositionStart}
@@ -482,12 +485,24 @@ class DraftEditor extends React.Component<DraftEditorProps, State> {
         this.editor.ownerDocument.execCommand('AutoUrlDetect', false, false);
       }
     }
+
+    if (this.editor && hasBeforeInputSupport) {
+      // @ts-ignore The `beforeinput` event isn't recognized.
+      this.editor.addEventListener('beforeinput', this._onBeforeInput);
+    }
   }
 
   componentDidUpdate(): void {
     this._blockSelectEvents = false;
     this._latestEditorState = this.props.editorState;
     this._latestCommittedEditorState = this.props.editorState;
+  }
+
+  componentWillUnmount(): void {
+    if (this.editor && hasBeforeInputSupport) {
+      // @ts-ignore The `beforeinput` event isn't recognized.
+      this.editor.removeEventListener('beforeinput', this._onBeforeInput);
+    }
   }
 
   /**
