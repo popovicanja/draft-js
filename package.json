@@ -1,7 +1,7 @@
 {
   "name": "@veedstudio/draft-js",
   "description": "A React framework for building text editors.",
-  "version": "0.11.8",
+  "version": "0.11.9",
   "keywords": [
     "draftjs",
     "editor",
@@ -13,10 +13,12 @@
   "files": [
     "dist/",
     "lib/",
-    "LICENSE"
+    "LICENSE",
+    "index.d.ts"
   ],
   "main": "lib/Draft.js",
   "style": "dist/Draft.css",
+  "types": "index.d.ts",
   "repository": "facebook/draft-js",
   "license": "MIT",
   "scripts": {
